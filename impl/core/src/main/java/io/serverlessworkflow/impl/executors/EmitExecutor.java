@@ -24,6 +24,7 @@ import io.serverlessworkflow.api.types.EventDataschema;
 import io.serverlessworkflow.api.types.EventProperties;
 import io.serverlessworkflow.api.types.EventSource;
 import io.serverlessworkflow.api.types.EventTime;
+import io.serverlessworkflow.impl.ServiceLoaderCache;
 import io.serverlessworkflow.impl.TaskContext;
 import io.serverlessworkflow.impl.WorkflowApplication;
 import io.serverlessworkflow.impl.WorkflowContext;
@@ -41,16 +42,12 @@ import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
-import java.util.ServiceLoader;
 import java.util.concurrent.CompletableFuture;
 
 public class EmitExecutor extends RegularTaskExecutor<EmitTask> {
 
   private static final Collection<EmittedEventDecorator> emittedDecorators =
-      ServiceLoader.load(EmittedEventDecorator.class).stream()
-          .map(ServiceLoader.Provider::get)
-          .sorted()
-          .toList();
+      ServiceLoaderCache.loadServices(EmittedEventDecorator.class);
   private final EventPropertiesBuilder props;
 
   public static class EmitExecutorBuilder
